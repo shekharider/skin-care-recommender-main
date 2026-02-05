@@ -9,21 +9,55 @@ import image2 from "../Vectors/image2.png";
 import image3 from "../Vectors/image3.png";
 import image4 from "../Vectors/image4.png";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+const BACKEND_URL = "http://localhost:4000";
+
 
 export default function Home() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [isLogin, setIsLogin] = useState(true); // Toggle between Login and Signup
 
-    const handleLoginSuccess = (response) => {
-        console.log("Login Success:", response);
-    };
+    const handleLoginSuccess = async (response) => {
+    try {
+        // 1. Google ID token from Google
+        const googleIdToken = response.credential;
+
+        // 2. Send token to backend for verification
+        const res = await fetch(`${BACKEND_URL}/api/auth/google`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                token: googleIdToken,
+            }),
+            credentials: "include", // ⭐ VERY IMPORTANT
+        });
+
+        // 3. Read backend response
+        const data = await res.json();
+
+        if (res.ok) {
+            console.log("Backend authentication success:", data);
+            alert("Login successful!");
+            setDropdownOpen(false);
+        } else {
+            console.error("Backend authentication failed:", data);
+            alert("Login failed!");
+        }
+
+    } catch (error) {
+        console.error("Login error:", error);
+        alert("Something went wrong during login");
+    }
+};
+
 
     const handleLoginFailure = (response) => {
         console.error("Login Failed:", response);
     };
 
     return (
-        <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+        <GoogleOAuthProvider clientId="1234567890-abcdefg.apps.googleusercontent.com">
             <div className="home">
                 <div className="navbar">
                     <div className="logger-black"></div>
