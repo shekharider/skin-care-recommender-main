@@ -14,9 +14,11 @@ export default function Results() {
     const recommendations = location.state?.recommendations || {}; // Default to an empty object
 
     let items = [];
-    if (recommendations.data) {
+    if (Array.isArray(recommendations.data)) {
+        items = recommendations.data;
+    } else if (recommendations.data) {
         try {
-            items = JSON.parse(recommendations.data); // Parse the JSON string
+            items = JSON.parse(recommendations.data);
         } catch (error) {
             console.error("Error parsing recommendations data:", error);
         }

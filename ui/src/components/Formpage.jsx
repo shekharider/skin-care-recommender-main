@@ -35,15 +35,20 @@ const Formpage = () => {
 
         try {
             const response = await fetch(
-                "http://localhost:4000/get-recommendations",
+                "http://localhost:4000/api/recommendations",
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    credentials: "include",
                     body: JSON.stringify(userInput),
                 }
             );
+
+            if (!response.ok) {
+                throw new Error(`Backend returned ${response.status}`);
+            }
 
             const recommendations = await response.json();
             console.log("Recommended Products:", recommendations);

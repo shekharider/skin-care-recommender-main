@@ -1,6 +1,5 @@
 const express = require("express");
 const { getRecommendations } = require("../controllers/recommendation.controller");
-const authMiddleware = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
@@ -9,8 +8,8 @@ const router = express.Router();
 | Recommendation Routes
 |--------------------------------------------------------------------------
 | POST /api/recommendations
-| Protected route
+| Public route
 */
-router.post("/", authMiddleware, getRecommendations);
+router.post("/", getRecommendations);
 
 module.exports = router;

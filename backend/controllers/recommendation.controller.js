@@ -9,12 +9,13 @@ const flaskService = require("../services/flask.service");
 | Sends response back to client
 */
 
+
 exports.getRecommendations = async (req, res) => {
   try {
     const { skin_type, concern_1, concern_2, concern_3 } = req.body;
 
     // Basic validation
-    if (!skin_type) {
+    if (skin_type === undefined || skin_type === null) {
       return res.status(400).json({ message: "skin_type is required" });
     }
 
@@ -27,6 +28,7 @@ exports.getRecommendations = async (req, res) => {
     });
 
     // Send response to frontend
+
     res.status(200).json({
       message: "Recommendations fetched successfully",
       data: recommendations,

@@ -1,5 +1,6 @@
 # Import necessary libraries
 from flask import Flask, request, jsonify
+from pathlib import Path
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
@@ -10,7 +11,8 @@ from sklearn.impute import SimpleImputer
 app = Flask(__name__)
 
 # Load the dataset
-data = pd.read_csv("to_be_use_dataset.csv")
+DATA_PATH = Path(__file__).resolve().parent / "to_be_use_dataset.csv"
+data = pd.read_csv(DATA_PATH)
 
 # Step 1: Handle missing values
 # Fill missing values in 'concern', 'concern 2', 'concern 3' with the most frequent value (mode) 
@@ -62,7 +64,7 @@ def recommend():
     recommendations = recommend_top_products(skin_type, concern_1, concern_2, concern_3)
     
     # Convert DataFrame to JSON and return the response
-    recommendations_json = recommendations.to_json(orient='records')
+    recommendations_json = recommendations.to_dict(orient='records')
     return jsonify(recommendations_json)
 
 if __name__ == '__main__':
