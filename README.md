@@ -85,7 +85,7 @@ skin-care-recommender/
 
 ### 1. Clone the repo  
 ```bash
-git clone https://github.com/Harry9021/skin-care-recommender.git
+git clone https://github.com/shekharider/skin-care-recommender.git
 cd skin-care-recommender
 ```
 
