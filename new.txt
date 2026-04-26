@@ -1,0 +1,34 @@
+project-root/
+│
+├── backend/
+│   │
+│   ├── app.js
+│   ├── server.js
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── .env
+│   ├── .gitignore
+│   │
+│   ├── routes/
+│   │   ├── auth.routes.js
+│   │   └── recommendation.routes.js
+│   │
+│   ├── controllers/
+│   │   ├── auth.controller.js
+│   │   └── recommendation.controller.js
+│   │
+│   ├── middleware/
+│   │   └── auth.middleware.js
+│   │
+│   └── services/
+│       └── flask.service.js   # only HTTP communication logic
+│
+├── ml-model/
+│   │
+│   ├── app.py                # Flask entry point
+│   ├── recommend.py          # ML logic
+│   ├── model.pkl             # trained model
+│   ├── requirements.txt
+│   └── README.md
+│
+└── README.md                 # overall project explanation

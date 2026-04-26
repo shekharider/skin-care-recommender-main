@@ -5,6 +5,9 @@ import image2 from "../Vectors/image6.png";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const AUTH_TOKEN_KEY = "authToken";
+
 const Formpage = () => {
     const [formData, setFormData] = useState({
         skinType: "",
@@ -12,7 +15,6 @@ const Formpage = () => {
         concern2: "",
         concern3: "",
     });
-
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -26,6 +28,17 @@ const Formpage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Try mock login if no token exists
+        let authToken = localStorage.getItem(AUTH_TOKEN_KEY);
+        if (!authToken) {
+            const loginSuccess = await mockLogin();
+            if (!loginSuccess) {
+                alert("Authentication failed. Please try again.");
+                return;
+            }
+            authToken = localStorage.getItem(AUTH_TOKEN_KEY);
+        }
+
         const userInput = {
             skin_type: getSkinTypeValue(formData.skinType),
             concern_1: getConcernValue(formData.concern1),
@@ -35,15 +48,20 @@ const Formpage = () => {
 
         try {
             const response = await fetch(
-                "http://localhost:4000/get-recommendations",
+                `${API_BASE_URL}/api/recommendations`,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${authToken}`,
                     },
                     body: JSON.stringify(userInput),
                 }
             );
+
+            if (!response.ok) {
+                throw new Error(`Backend returned ${response.status}`);
+            }
 
             const recommendations = await response.json();
             console.log("Recommended Products:", recommendations);
@@ -52,6 +70,31 @@ const Formpage = () => {
         } catch (error) {
             console.error("Error fetching recommendations:", error);
             alert("Failed to retrieve recommendations. Please try again.");
+        }
+    };
+
+    const mockLogin = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/mock`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: "test@example.com",
+                    name: "Test User",
+                }),
+            });
+
+            const data = await response.json();
+            if (response.ok && data.token) {
+                localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("Mock login failed:", error);
+            return false;
         }
     };
 
@@ -157,8 +200,18 @@ const Formpage = () => {
                             ))}
                     </select>
 
-                    <button className="submit-button" type="submit">Submit</button>
+                    <button className="submit-button" type="submit">Suggest</button>
                 </form>
+
+                <div className="chatbot-container chat-link-card">
+                    <div className="chatbot-header">
+                        <div>
+                            <h4>Skincare Advice</h4>
+                            <p>Need help with a routine, products, or skin concern? Chat with the AI skincare assistant here.</p>
+                        </div>
+                    </div>
+                    <Link className="chat-open-button" to="/chat">Chat</Link>
+                </div>
             </div>
 
             <div className="imager-x">
