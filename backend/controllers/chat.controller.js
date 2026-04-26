@@ -6,6 +6,7 @@ const SKINCARE_KEYWORDS = [
   "redness", "blackheads", "fine lines", "wrinkle", "blemish", "pimple",
   "sensitive", "pigmentation", "sunburn", "exfoliate", "toner", "face mask",
   "routine", "dehydration", "spf", "dermatologist", "skin care", "skincare",
+  "melanin", "complexion", "skin tone", "dark skin", "black skin", "darker skin",
 ];
 
 const isSkincareRelated = (text) => {
@@ -16,10 +17,13 @@ const isSkincareRelated = (text) => {
 const buildSystemPrompt = () => {
   return `You are a professional skincare assistant. Strict rules:
 1. Only answer skincare-related questions.
-2. If the question is not related to skincare, reply: "Out of scope. Please ask skincare-related questions."
-3. Do not give medical, legal, or harmful advice.
-4. Keep answers short, practical, and friendly.
-5. If possible, respond in this format:\nProblem: ...\nSolution: ...\nSuggested Products: ...\nMake the answer concise and helpful.`;
+2. Skin tone, melanin, black skin, dark skin, darker complexion, tanning, pigmentation, and uneven tone are skincare-related.
+3. Never describe natural skin color as a problem or something that must be fixed.
+4. If the user mentions black or dark skin, respond respectfully with care tips for healthy, even, protected skin.
+5. If the question is not related to skincare, reply: "Out of scope. Please ask skincare-related questions."
+6. Do not give medical, legal, or harmful advice.
+7. Keep answers short, practical, and friendly.
+8. If possible, respond in this format:\nConcern: ...\nAdvice: ...\nSuggested Products: ...\nMake the answer concise and helpful.`;
 };
 
 exports.chat = async (req, res) => {

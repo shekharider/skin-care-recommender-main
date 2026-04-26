@@ -5,6 +5,7 @@ import Formpage from "../components/Formpage";
 import Results from "../components/Results";
 import Profile from "../components/Profile";
 import CartPage from "../components/CartPage";
+import ChatPage from "../components/ChatPage";
 
 export default function Router() {
     return (
@@ -16,6 +17,7 @@ export default function Router() {
                     <Route path="/results" element={<Results />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/cart" element={<CartPage />} />
+                    <Route path="/chat" element={<ChatPage />} />
                     
                 </Routes>
             </BrowserRouter>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import "../Styles/Formpage.css";
 import image1 from "../Vectors/image5.png";
 import image2 from "../Vectors/image6.png";
@@ -15,14 +15,6 @@ const Formpage = () => {
         concern2: "",
         concern3: "",
     });
-    const [chatInput, setChatInput] = useState("");
-    const [chatMessages, setChatMessages] = useState([
-        {
-            from: "bot",
-            text: "Hello! Ask me anything about skincare and get advice below.",
-        },
-    ]);
-    const chatWindowRef = useRef(null);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -106,53 +98,6 @@ const Formpage = () => {
         }
     };
 
-    const handleChatSubmit = async (e) => {
-        e.preventDefault();
-
-        const trimmedMessage = chatInput.trim();
-        if (!trimmedMessage) return;
-
-        const userMessage = { from: "user", text: trimmedMessage };
-        setChatMessages(prev => [...prev, userMessage]);
-        setChatInput("");
-
-        try {
-            const history = chatMessages
-                .map((message) => ({
-                    role: message.from === "user" ? "user" : "assistant",
-                    content: message.text,
-                }))
-                .slice(-10);
-
-            const response = await fetch(`${API_BASE_URL}/api/chat`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    message: trimmedMessage,
-                    history,
-                }),
-            });
-
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data.message || "Chat request failed");
-            }
-
-            setChatMessages(prev => [...prev, { from: "bot", text: data.reply }]);
-        } catch (error) {
-            console.error("Chat error:", error);
-            setChatMessages(prev => [
-                ...prev,
-                {
-                    from: "bot",
-                    text: "Sorry, I couldn't reach the skincare assistant. Please try again later.",
-                },
-            ]);
-        }
-    };
-
     const getSkinTypeValue = (skinType) => {
         switch (skinType) {
             case "dry": return 0;
@@ -196,12 +141,6 @@ const Formpage = () => {
     const getAvailableConcerns = (selected) => {
         return concerns.filter(concern => concern !== selected);
     };
-
-    useEffect(() => {
-        if (chatWindowRef.current) {
-            chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
-        }
-    }, [chatMessages]);
 
     return (
         <div className="form-image-container">
@@ -264,29 +203,14 @@ const Formpage = () => {
                     <button className="submit-button" type="submit">Suggest</button>
                 </form>
 
-                <div className="chatbot-container">
+                <div className="chatbot-container chat-link-card">
                     <div className="chatbot-header">
                         <div>
                             <h4>Skincare Advice</h4>
-                            <p>Ask a question and get quick tips on products, routines, or concerns.</p>
+                            <p>Need help with a routine, products, or skin concern? Chat with the AI skincare assistant here.</p>
                         </div>
                     </div>
-                    <div className="chat-window" ref={chatWindowRef}>
-                        {chatMessages.map((message, idx) => (
-                            <div key={idx} className={`chat-message ${message.from}`}>
-                                <span>{message.text}</span>
-                            </div>
-                        ))}
-                    </div>
-                    <form className="chat-input-form" onSubmit={handleChatSubmit}>
-                        <input
-                            type="text"
-                            placeholder="Ask something like: Best moisturizer for oily skin"
-                            value={chatInput}
-                            onChange={(e) => setChatInput(e.target.value)}
-                        />
-                        <button className="chat-send-button" type="submit">Ask</button>
-                    </form>
+                    <Link className="chat-open-button" to="/chat">Chat</Link>
                 </div>
             </div>
 

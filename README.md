@@ -85,7 +85,7 @@ skin-care-recommender/
 
 ### 1. Clone the repo  
 ```bash
-git clone https://github.com/Harry9021/skin-care-recommender.git
+git clone https://github.com/shekharider/skin-care-recommender.git
 cd skin-care-recommender
 ```
 
@@ -177,4 +177,4 @@ The chatbot operates within defined guardrails to ensure safe, accurate, and hel
 
 ---
 
-Made with ❤️ by [@Harry9021](https://github.com/Harry9021)
+Made with ❤️ by [@shankar](https://github.com/shekharider)
