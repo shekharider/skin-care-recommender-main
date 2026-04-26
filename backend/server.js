@@ -1,5 +1,6 @@
 // Load environment variables FIRST
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 
 // Import express app
 const app = require("./app");

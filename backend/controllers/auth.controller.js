@@ -6,6 +6,10 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 exports.googleLogin = async (req, res) => {
   try {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.JWT_SECRET) {
+      return res.status(500).json({ message: "Backend auth environment is not configured" });
+    }
+
     // 1. Get Google ID token from frontend
     const { token } = req.body;
 
@@ -37,6 +41,7 @@ exports.googleLogin = async (req, res) => {
       {
         email: payload.email,
         name: payload.name,
+        picture: payload.picture,
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
@@ -53,6 +58,7 @@ exports.googleLogin = async (req, res) => {
     // 6. Respond success
     res.status(200).json({
       message: "Authentication successful",
+      token: backendToken,
       user: {
         email: payload.email,
         name: payload.name,
@@ -63,5 +69,48 @@ exports.googleLogin = async (req, res) => {
   } catch (error) {
     console.error("Google Auth Error:", error);
     res.status(401).json({ message: "Google authentication failed" });
+  }
+};
+
+exports.logout = (req, res) => {
+  res.clearCookie("token");
+  res.status(200).json({ message: "Logged out successfully" });
+};
+
+// Mock login for testing (bypass Google auth)
+exports.mockLogin = (req, res) => {
+  try {
+    const { email = "test@example.com", name = "Test User" } = req.body;
+
+    const backendToken = jwt.sign(
+      {
+        email,
+        name,
+        picture: "https://via.placeholder.com/150",
+        isMocked: true,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("token", backendToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      message: "Mock authentication successful",
+      token: backendToken,
+      user: {
+        email,
+        name,
+        picture: "https://via.placeholder.com/150",
+      },
+    });
+  } catch (error) {
+    console.error("Mock Auth Error:", error);
+    res.status(400).json({ message: "Mock authentication failed" });
   }
 };

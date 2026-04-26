@@ -2,8 +2,13 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
   try {
-    // 1. Read token from HTTP-only cookie
-    const token = req.cookies.token;
+    const authHeader = req.headers.authorization || "";
+    const bearerToken = authHeader.startsWith("Bearer ")
+      ? authHeader.slice(7).trim()
+      : null;
+
+    // 1. Read token from Authorization header first, then fall back to cookie
+    const token = bearerToken || req.cookies.token;
 
     // 2. If no token → block request
     if (!token) {

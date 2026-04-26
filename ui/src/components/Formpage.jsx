@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../Styles/Formpage.css";
 import image1 from "../Vectors/image5.png";
 import image2 from "../Vectors/image6.png";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const AUTH_TOKEN_KEY = "authToken";
 
 const Formpage = () => {
     const [formData, setFormData] = useState({
@@ -12,7 +15,14 @@ const Formpage = () => {
         concern2: "",
         concern3: "",
     });
-
+    const [chatInput, setChatInput] = useState("");
+    const [chatMessages, setChatMessages] = useState([
+        {
+            from: "bot",
+            text: "Hello! Ask me anything about skincare and get advice below.",
+        },
+    ]);
+    const chatWindowRef = useRef(null);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -26,6 +36,17 @@ const Formpage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Try mock login if no token exists
+        let authToken = localStorage.getItem(AUTH_TOKEN_KEY);
+        if (!authToken) {
+            const loginSuccess = await mockLogin();
+            if (!loginSuccess) {
+                alert("Authentication failed. Please try again.");
+                return;
+            }
+            authToken = localStorage.getItem(AUTH_TOKEN_KEY);
+        }
+
         const userInput = {
             skin_type: getSkinTypeValue(formData.skinType),
             concern_1: getConcernValue(formData.concern1),
@@ -35,13 +56,13 @@ const Formpage = () => {
 
         try {
             const response = await fetch(
-                "http://localhost:4000/api/recommendations",
+                `${API_BASE_URL}/api/recommendations`,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${authToken}`,
                     },
-                    credentials: "include",
                     body: JSON.stringify(userInput),
                 }
             );
@@ -57,6 +78,78 @@ const Formpage = () => {
         } catch (error) {
             console.error("Error fetching recommendations:", error);
             alert("Failed to retrieve recommendations. Please try again.");
+        }
+    };
+
+    const mockLogin = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/mock`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: "test@example.com",
+                    name: "Test User",
+                }),
+            });
+
+            const data = await response.json();
+            if (response.ok && data.token) {
+                localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("Mock login failed:", error);
+            return false;
+        }
+    };
+
+    const handleChatSubmit = async (e) => {
+        e.preventDefault();
+
+        const trimmedMessage = chatInput.trim();
+        if (!trimmedMessage) return;
+
+        const userMessage = { from: "user", text: trimmedMessage };
+        setChatMessages(prev => [...prev, userMessage]);
+        setChatInput("");
+
+        try {
+            const history = chatMessages
+                .map((message) => ({
+                    role: message.from === "user" ? "user" : "assistant",
+                    content: message.text,
+                }))
+                .slice(-10);
+
+            const response = await fetch(`${API_BASE_URL}/api/chat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    message: trimmedMessage,
+                    history,
+                }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || "Chat request failed");
+            }
+
+            setChatMessages(prev => [...prev, { from: "bot", text: data.reply }]);
+        } catch (error) {
+            console.error("Chat error:", error);
+            setChatMessages(prev => [
+                ...prev,
+                {
+                    from: "bot",
+                    text: "Sorry, I couldn't reach the skincare assistant. Please try again later.",
+                },
+            ]);
         }
     };
 
@@ -103,6 +196,12 @@ const Formpage = () => {
     const getAvailableConcerns = (selected) => {
         return concerns.filter(concern => concern !== selected);
     };
+
+    useEffect(() => {
+        if (chatWindowRef.current) {
+            chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+        }
+    }, [chatMessages]);
 
     return (
         <div className="form-image-container">
@@ -162,8 +261,33 @@ const Formpage = () => {
                             ))}
                     </select>
 
-                    <button className="submit-button" type="submit">Submit</button>
+                    <button className="submit-button" type="submit">Suggest</button>
                 </form>
+
+                <div className="chatbot-container">
+                    <div className="chatbot-header">
+                        <div>
+                            <h4>Skincare Advice</h4>
+                            <p>Ask a question and get quick tips on products, routines, or concerns.</p>
+                        </div>
+                    </div>
+                    <div className="chat-window" ref={chatWindowRef}>
+                        {chatMessages.map((message, idx) => (
+                            <div key={idx} className={`chat-message ${message.from}`}>
+                                <span>{message.text}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <form className="chat-input-form" onSubmit={handleChatSubmit}>
+                        <input
+                            type="text"
+                            placeholder="Ask something like: Best moisturizer for oily skin"
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                        />
+                        <button className="chat-send-button" type="submit">Ask</button>
+                    </form>
+                </div>
             </div>
 
             <div className="imager-x">
