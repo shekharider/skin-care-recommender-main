@@ -68,7 +68,7 @@ export default function Home() {
 
             if (pendingTryNow) {
                 setPendingTryNow(false);
-                navigate("/form");
+                navigate("/features");
             }
         } catch (error) {
             console.error("Login error:", error);
@@ -84,7 +84,7 @@ export default function Home() {
 
     const handleTryNowClick = async () => {
         if (isLoggedIn) {
-            navigate("/form");
+            navigate("/features");
             return;
         }
 

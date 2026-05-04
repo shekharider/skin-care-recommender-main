@@ -75,7 +75,7 @@ const ChatPage = () => {
     return (
         <div className="form-image-container chat-page">
             <div className="blue-box">
-                <Link to="/form">
+                <Link to="/features">
                     <div className="backarrow">
                         <IoMdArrowRoundBack style={{ width: 30, height: 30, marginLeft: 10, marginTop: 10 }} />
                     </div>
