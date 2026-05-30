@@ -128,6 +128,46 @@ npm start
 
 ---
 
+## 🤖 Chatbot Integration
+
+The chatbot module provides an **intelligent conversational interface** to help users discover skincare products through natural language interaction.
+
+### Chatbot Features
+- 💬 **Conversational Recommendations** – Users describe their skin concerns in natural language  
+- 🎯 **Context-Aware Suggestions** – Understands skin type, sensitivity, and specific concerns  
+- 🔄 **Follow-up Guidance** – Clarifies user needs and refines recommendations  
+- 📚 **Product Knowledge Base** – Trained on skincare product catalog and ingredient info  
+
+### Guardrails & Safety
+
+The chatbot operates within defined guardrails to ensure safe, accurate, and helpful responses:
+
+**Scope (✅ In-Scope)**
+- Product recommendations based on skin type & concerns  
+- Ingredient information & skin benefits  
+- Price comparisons & product alternatives  
+- General skincare routine guidance  
+- Product suitability based on user profile  
+
+**Out-of-Scope (❌ Not Recommended)**
+- Medical diagnosis or treatment claims  
+- Prescription of medications or controlled substances  
+- Replacing professional dermatologist advice  
+- Allergy testing or medical assessments  
+- Treatment of serious skin conditions (acne, eczema, psoriasis → refer to dermatologist)  
+- Personal health data storage beyond session context  
+
+### Context & Limitations
+
+- **Session-Based Context** – Chatbot remembers user preferences within a session  
+- **Single User Focus** – Recommendations tailored to individual profile only  
+- **Dataset Limitations** – Recommendations limited to products in `to_be_use_dataset.csv`  
+- **Accuracy Note** – Current KNN model operates at ~41% accuracy; recommendations are suggestion-based, not definitive  
+- **No Real-Time Updates** – Product availability & pricing are static from dataset  
+- **Privacy** – No personal health data is stored; context is temporary per session  
+
+---
+
 ## 🤝 Contributing
 
 1. Fork & clone  

@@ -1,0 +1,34 @@
+# Skin Care Recommendation System
+
+## Overview
+A full-stack ML-powered recommendation system that suggests skincare products based on user skin type and concerns.
+
+## Tech Stack
+- Frontend: React
+- Backend: Node.js, Express
+- ML Service: Python, Flask
+- ML Libraries: pandas, NumPy, scikit-learn
+
+## Architecture
+React UI → Node.js Backend → Flask ML Service
+
+## Features
+- User input for skin type and concerns
+- ML-based product recommendations
+- Cart and order flow
+- Microservice-based architecture
+
+## How to Run
+1. Start ML service (port 5000)
+2. Start backend server (port 4000)
+3. Start React UI (port 3000)
+
+## Challenges Faced
+- Python and ML dependency compatibility
+- Flask–Werkzeug mismatch
+- NumPy–pandas binary issues
+
+## Future Improvements
+- Better feature encoding
+- Improved ML models
+- Proper OAuth configuration
